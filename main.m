@@ -2,7 +2,7 @@
 % Joshua E. Goldford
 % 1-9-2016
 % 
-% note that the example data files are not provided the GitHub and can be found in the supplement of the following manuscript
+% note that the example data files are not provided via GitHub and can be found in the supplement of the following manuscript
 % Goldford JE, Libourel IG.  Unsupervised Identification of Isotope Labeled Pepides
 %
 %
