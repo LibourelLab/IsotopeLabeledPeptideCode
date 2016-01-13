@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="info" description="">
+    <ITEM name="version" value="1.10.0" type="string" description="" />
+    <ITEM name="num_vertices" value="3" type="int" description="" />
+    <ITEM name="num_edges" value="2" type="int" description="" />
+    <ITEM name="description" value="&lt;![CDATA[]]&gt;" type="string" description="" />
+  </NODE>
+  <NODE name="vertices" description="">
+    <NODE name="0" description="">
+      <ITEM name="recycle_output" value="false" type="string" description="" />
+      <ITEM name="toppas_type" value="input file list" type="string" description="" />
+      <ITEMLIST name="file_names" type="string" description="">
+        <LISTITEM value="../../../../../../../Volumes/CBS-3/Groups/LAB-libourel/Josh/DougsData/soy storage protein/unlabeled/Jim1_HCD_20130108.mzXML"/>
+      </ITEMLIST>
+      <ITEM name="x_pos" value="-520" type="float" description="" />
+      <ITEM name="y_pos" value="-420" type="float" description="" />
+    </NODE>
+    <NODE name="2" description="">
+      <ITEM name="recycle_output" value="false" type="string" description="" />
+      <ITEM name="toppas_type" value="tool" type="string" description="" />
+      <ITEM name="tool_name" value="MassTraceExtractor" type="string" description="" />
+      <ITEM name="tool_type" value="" type="string" description="" />
+      <ITEM name="x_pos" value="-720" type="float" description="" />
+      <ITEM name="y_pos" value="-60" type="float" description="" />
+      <NODE name="parameters" description="">
+        <ITEM name="in" value="" type="string" description="input centroided mzML file" tags="input file,required" supported_formats="*.mzML" />
+        <ITEM name="out" value="/Users/gold0380/Dropbox_personal/Dropbox/software_validation/soy_chymo/peptide identification/unlabeled_openms/mass_traces,noPP.featureXML" type="string" description="output featureXML file with mass traces" tags="output file,required" supported_formats="*.featureXML" />
+        <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+        <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+        <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+        <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+        <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+        <NODE name="algorithm" description="Algorithm parameters section">
+          <NODE name="common" description="">
+            <ITEM name="noise_threshold_int" value="100" type="float" description="Intensity threshold below which peaks are regarded as noise." />
+            <ITEM name="chrom_peak_snr" value="1" type="float" description="Minimum signal-to-noise a mass trace should have." />
+            <ITEM name="chrom_fwhm" value="10" type="float" description="Expected chromatographic peak width (in seconds)." />
+          </NODE>
+          <NODE name="mtd" description="">
+            <ITEM name="mass_error_ppm" value="8" type="float" description="Allowed mass deviation (in ppm)." />
+            <ITEM name="reestimate_mt_sd" value="true" type="string" description="Enables dynamic re-estimation of m/z variance during mass trace collection stage." restrictions="true,false" />
+            <ITEM name="min_sample_rate" value="0.5" type="float" description="Minimum fraction of scans along the mass trace that must contain a peak." tags="advanced" />
+            <ITEM name="min_trace_length" value="0.8" type="float" description="Minimum expected length of a mass trace (in seconds)." tags="advanced" />
+          </NODE>
+          <NODE name="epd" description="">
+            <ITEM name="width_filtering" value="off" type="string" description="Enable filtering of unlikely peak widths. The fixed setting filters out mass traces outside the [min_fwhm, max_fwhm] interval (set parameters accordingly!). The auto setting filters with the 5 and 95% quantiles of the peak width distribution." restrictions="off,fixed,auto" />
+            <ITEM name="min_fwhm" value="0.15" type="float" description="Minimum full-width-at-half-maximum of chromatographic peaks (in seconds). Ignored if paramter width_filtering is off or auto." tags="advanced" />
+            <ITEM name="max_fwhm" value="65" type="float" description="Maximum full-width-at-half-maximum of chromatographic peaks (in seconds). Ignored if paramter width_filtering is off or auto." tags="advanced" />
+            <ITEM name="masstrace_snr_filtering" value="false" type="string" description="Apply post-filtering by signal-to-noise ratio after smoothing." tags="advanced" restrictions="false,true" />
+            <ITEM name="min_trace_length" value="0.8" type="float" description="Minimum length of a mass trace (in seconds)." tags="advanced" />
+            <ITEM name="max_trace_length" value="850" type="float" description="Maximum length of a mass trace (in seconds)." tags="advanced" />
+            <ITEM name="enabled" value="false" type="string" description="Enables/disables the chromatographic peak detection of mass traces" restrictions="true,false" />
+          </NODE>
+        </NODE>
+      </NODE>
+    </NODE>
+    <NODE name="1" description="">
+      <ITEM name="recycle_output" value="false" type="string" description="" />
+      <ITEM name="toppas_type" value="tool" type="string" description="" />
+      <ITEM name="tool_name" value="FileConverter" type="string" description="" />
+      <ITEM name="tool_type" value="" type="string" description="" />
+      <ITEM name="x_pos" value="-700" type="float" description="" />
+      <ITEM name="y_pos" value="-300" type="float" description="" />
+      <NODE name="parameters" description="">
+        <ITEM name="in" value="" type="string" description="input file " tags="input file,required" supported_formats="*.mzData,*.mzXML,*.mzML,*.dta,*.dta2d,*.mgf,*.featureXML,*.consensusXML,*.ms2,*.fid,*.tsv,*.peplist,*.kroenik,*.edta" />
+        <ITEM name="in_type" value="mzXML" type="string" description="input file type -- default: determined from file extension or content#br#" restrictions="mzData,mzXML,mzML,dta,dta2d,mgf,featureXML,consensusXML,ms2,fid,tsv,peplist,kroenik,edta" />
+        <ITEM name="out" value="" type="string" description="output file " tags="output file,required" supported_formats="*.mzData,*.mzXML,*.mzML,*.dta2d,*.mgf,*.featureXML,*.consensusXML,*.edta" />
+        <ITEM name="out_type" value="mzML" type="string" description="output file type -- default: determined from file extension or content#br#" restrictions="mzData,mzXML,mzML,dta2d,mgf,featureXML,consensusXML,edta" />
+        <ITEM name="TIC_DTA2D" value="false" type="string" description="Export the TIC instead of the entire experiment in mzML/mzData/mzXML -&gt; DTA2D conversions." tags="advanced" restrictions="true,false" />
+        <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+        <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+        <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+        <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+        <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      </NODE>
+    </NODE>
+  </NODE>
+  <NODE name="edges" description="">
+    <NODE name="0" description="">
+      <NODE name="source/target" description="">
+        <ITEM name="" value="0/1" type="string" description="" />
+      </NODE>
+      <NODE name="source_out_param" description="">
+        <ITEM name="" value="__no_name__" type="string" description="" />
+      </NODE>
+      <NODE name="target_in_param" description="">
+        <ITEM name="" value="in" type="string" description="" />
+      </NODE>
+    </NODE>
+    <NODE name="1" description="">
+      <NODE name="source/target" description="">
+        <ITEM name="" value="1/2" type="string" description="" />
+      </NODE>
+      <NODE name="source_out_param" description="">
+        <ITEM name="" value="out" type="string" description="" />
+      </NODE>
+      <NODE name="target_in_param" description="">
+        <ITEM name="" value="in" type="string" description="" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>

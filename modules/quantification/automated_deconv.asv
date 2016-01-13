@@ -1,0 +1,129 @@
+function [output] = automated_deconv(peptides,iterations,start)
+%% input 
+
+define natural abundance mids
+na_mid.C = [0.989300000000000,0.0107000000000000];
+na_mid.N = [0.996320000000000,0.00368000000000000];
+na_mid.O = [0.997570000000000,0.000380000000000000,0.00205000000000000];
+na_mid.S = [0.949300000000000,0.00760000000000000,0.0429000000000000,0,0.000200000000000000];
+na_mid.H = [0.999885000000000,0.000115000000000000];
+
+
+%%
+seq_id = {'seq', 'Sequence','sequence'};
+
+m = isfield(peptides,seq_id);
+seq_id = seq_id(m); seq_id = seq_id{1};
+
+
+AA = {'A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V'};
+aa_c = cellfun(@atomiccomp,AA,'uni',0);
+aa_c = cellfun(@(x) x.C,aa_c,'uni',1);
+options = optimoptions('fmincon','Display','iter','TolFun',1e-11,'TolX',1e-11, ...
+                    'MaxFunEvals',1e30,'MaxIter',1e4,'Algorithm','interior-point','DiffMinChange',1e-4);
+
+[amino_acids]=cellfun(@aacount,{peptides.(seq_id)},'uni',0);
+
+
+
+A = getLinearEqualityConstraint();
+ub = ones(sum(aa_c+1),1);
+lb = zeros(sum(aa_c+1),1);
+b = ones(length(aa_c),1);
+
+for m = 1:iterations
+    if isempty(start)
+        x0 = getRandomEstimate();
+    else
+        x0 = start;
+    end
+    
+    [x{m},fval(m),exitflag{m}] = fmincon(@objective_function,x0,[],[],A,b,lb,ub,[],options);
+end
+
+output.aaMIDs = cellfun(@(y) mat2cell(y,aa_c+1),x,'uni',0);
+output.fval = fval;
+
+% take best estimate 
+
+[~,k] = min(fval);
+best.f = fval(k)
+best.x = x{k};
+
+exp = simulate_peptide_MID(best.x);
+
+for i=1:length(peptides)
+    peptides(i).simulated = exp{i}';
+end
+
+output.best = best;
+output.peptides = peptides;
+
+
+
+    function [MID] = amino_acid_conv(aaMID,pep_aa)
+        %amino_acids = aacount(sequence);
+        MID = 1;
+        for ii =1:length(AA)
+            for j =1:pep_aa.(AA{ii})
+                MID = conv(MID,aaMID{ii});
+            end
+        end
+        
+    end
+
+
+    function [residuum] = objective_function(x)
+        x_aa = mat2cell(x,aa_c+1);
+        expected = cellfun(@(x_r) amino_acid_conv(x_aa,x_r),amino_acids,'uni',0);
+        if ~isfield(peptides,'weight')
+            residuum = sum(cellfun(@(x,y) norm(x-y,1), {peptides.measured}, expected,'uni',1));
+        else
+            residuum = sum(cellfun(@(x,y,z) z*norm((x-y'),1), {peptides.measured}, expected,{peptides.weight},'uni',1));
+        end
+        
+    end
+
+    function [random_aa] = getRandomEstimate()
+        random_aa = cellfun(@(x) rand(1,x), num2cell(aa_c+1),'uni',0);
+        random_aa = cellfun(@(x) x./(sum(x)),random_aa,'uni',0);
+        random_aa = cell2mat(random_aa)';
+       
+    end
+
+
+    function [A_s] = getLinearEqualityConstraint()
+        A_s = zeros(length(aa_c),sum(aa_c+1));
+        g = [0,cumsum(aa_c+1)];
+        
+        for i =1:length(aa_c)
+            A_s(i,(g(i)+1):g(i+1)) = ones(1,aa_c(i)+1);
+        end
+    end
+
+    function [expected_k] = simulate_peptide_MID(x)
+        x_aa = mat2cell(x,aa_c+1);
+        expected_k = cellfun(@(x_r) amino_acid_conv(x_aa,x_r),amino_acids,'uni',0);
+    end
+
+    function [heteroMID,c] = get_hetero_MID(sequence,charge)
+        atom_types = {'N','O','S','H'};
+        atoms = atomiccomp(sequence);
+        
+        atoms.H = atoms.H + charge;
+        c = atoms.C; 
+        
+        heteroMID = 1;
+        for i =1:length(atom_types)
+            numAtoms = atoms.(atom_types{i});
+            for k = 1:numAtoms
+                heteroMID = conv(heteroMID,na_mid.(atom_types{i}));
+            end
+        end       
+    end
+
+
+
+
+
+end

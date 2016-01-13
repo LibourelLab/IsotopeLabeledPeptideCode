@@ -1,0 +1,68 @@
+function [fMID,cMID,hMID] = deconvolve_uniform_label(peptides)
+% fields from peptide are:
+% 1) measured ; measured RIA
+% 2) isotope: isotope index
+% 3) 
+
+
+
+
+% define natural abundance MIDS for each element
+na_mid.C = [0.989300000000000,0.0107000000000000];
+na_mid.N = [0.996320000000000,0.00368000000000000];
+na_mid.O = [0.997570000000000,0.000380000000000000,0.00205000000000000];
+na_mid.S = [0.949300000000000,0.00760000000000000,0.0429000000000000,0,0.000200000000000000];
+na_mid.H = [0.999885000000000,0.000115000000000000];
+
+
+
+% get heteroMIDs and the number of carbons
+[hMID,numCarbons]= cellfun(@(x,y)  get_hetero_MID(x,y),{peptides.seq},{peptides.charge},'uni',0);
+
+
+
+%define objective function for optimization ------> sum of squares residuum
+[fMID,cMID] = cellfun(@(w,y) amino_acid_conv(w,carbonLabel,y),numCarbons,hMID,'uni',0);
+
+
+
+
+    function [residuum] = objective_function(label)
+        expected = cellfun(@(numc,hetero) uniform_conv(numc,label,hetero),numCarbons,hMID,'uni',0);
+        % reduce expected to measured isotope index
+        expected = cellfun(@(x,y) x(y+1), expected,{peptides.isotope},'uni',0);
+        
+        if ~isfield(peptides,'weight')
+            residuum = sum(cellfun(@(x,y) norm(x-y,1), {peptides.measured}, expected,'uni',1));
+        else
+            residuum = sum(cellfun(@(x,y,z) z*norm((x-y'),1), {peptides.measured}, expected,{peptides.weight},'uni',1));
+        end
+        
+    end
+
+    function [MID,carbonMID] = uniform_conv(C,carbon_label,heteroMID)
+
+        carbonMID = binopdf(0:C,C,carbon_label);
+        MID = conv(carbonMID,heteroMID);
+
+    end
+
+    function [heteroMID,c] = get_hetero_MID(sequence,charge)
+        atom_types = {'N','O','S','H'};
+        atoms = atomiccomp(sequence);
+        atoms.H = atoms.H + charge;
+        c = atoms.C; 
+        
+        heteroMID = 1;
+        for i =1:length(atom_types)
+            numAtoms = atoms.(atom_types{i});
+            for k = 1:numAtoms
+                heteroMID = conv(heteroMID,na_mid.(atom_types{i}));
+            end
+        end       
+    end
+
+
+
+
+end
