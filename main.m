@@ -20,9 +20,9 @@ addpath('modules/openms/lib/matlab');
 addpath('modules/openms/lib/matlab');
 addpath('modules/extraction/lib');
 addpath('modules/quantification/lib');
-addpath('modules/msfilereader_matlab_api/mex');
-addpath('modules/msfilereader_matlab_api/sub');
-addpath('modules/msfilereader_matlab_api');
+addpath('modules/msfilereader_matlab_api/64/mex');
+addpath('modules/msfilereader_matlab_api/64/sub');
+addpath('modules/msfilereader_matlab_api/64');
 
 
 % parse maxqquant output into a matlab structure
