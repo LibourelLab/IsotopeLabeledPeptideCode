@@ -28,7 +28,7 @@ aa_c = cellfun(@(x) x.C,aa_c,'uni',1);
 
 % set optimizer options (turning off display will speed up code)
 options = optimoptions('fmincon','Display','iter','TolFun',1e-11,'TolX',1e-11, ...
-                    'MaxFunEvals',1e30,'MaxIter',1e2,'Algorithm','interior-point','DiffMinChange',1e-4);
+                    'MaxFunEvals',1e30,'MaxIter',1e4,'Algorithm','interior-point','DiffMinChange',1e-4);
 
 % determine the amino acid distribution per peptide                
 [amino_acids]=cellfun(@aacount,{peptides.(seq_id)},'uni',0);
